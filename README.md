@@ -48,7 +48,7 @@ For this workload, the out-of-space error is probably not caused by S3 itself. I
 
 CloudHub 2 local storage is ephemeral and limited by replica size, so a 2 GB compressed ZIP can easily exceed safe local working space once buffers, expanded entries, retries, and temporary files are included.
 
-## DataWeave Assessment
+## DataWeave Assessment – Will using DataWeave work?
 
 DataWeave is not the right tool for this specific problem.
 
@@ -56,7 +56,7 @@ DataWeave streaming is appropriate for streamable formats such as CSV records, J
 
 The MuleSoft Compression Module can extract ZIP archives, but for this workload it is not the safest CloudHub 2 design. The extract operation returns an object representation of archive entries, and examples commonly iterate over that object. For a large 2 GB ZIP with up to 1000 files, this can create too much pressure on heap and local temporary storage unless load testing proves otherwise.
 
-## Best Mule-Only Option
+## Mule-Only Option – I don't want to use a custom Java component
 
 If you can change the producer contract, the best Mule-components-only architecture is to avoid the large ZIP entirely:
 
@@ -324,8 +324,6 @@ S3 Get Object with non-repeatable-stream
 ```
 
 Avoid DataWeave and avoid Mule Compression Extract for this workload unless load testing proves that the implementation remains fully streamed with acceptable temporary storage use.
-
-If the file transfer is long-running, business-critical, or requires restart/resume, consider moving the unzip-to-SFTP workload to AWS ECS/Fargate or AWS Batch and let MuleSoft orchestrate the process.
 
 ## References
 
